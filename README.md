@@ -25,8 +25,9 @@ require_once __DIR__ . '/vendor/autoload.php';
 $container = new Katora\Container();
 
 /**
- * Setting static values is done in usual way
+ * Setting static values can be done in any way i.e., array or setter
  */
+// $container['config'] =  array(
 $container->add('config', array(
     'db' => array(
         'dsn' => 'mysql:host=localhost;dbname=katora',
