@@ -9,8 +9,8 @@ Install
 composer require vaibhavpandeyvpz/katora
 ```
 
-## Testing
-
+Testing
+------
 ``` bash
 vendor/bin/phpunit
 ```
