@@ -55,8 +55,9 @@
 <span class="pl-s1"><span class="pl-smi">$container</span> <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-c1">Katora\</span><span class="pl-c1">Container</span>();</span>
 <span class="pl-s1"></span>
 <span class="pl-s1"><span class="pl-c">/**</span></span>
-<span class="pl-s1"><span class="pl-c"> * Setting static values is done in usual way</span></span>
+<span class="pl-s1"><span class="pl-c"> * Setting static values can be done in any way i.e., array or setter</span></span>
 <span class="pl-s1"><span class="pl-c"> */</span></span>
+<span class="pl-s1"><span class="pl-c">// $container['config'] =  array(</span></span>
 <span class="pl-s1"><span class="pl-smi">$container</span><span class="pl-k">-&gt;</span>add(<span class="pl-s"><span class="pl-pds">'</span>config<span class="pl-pds">'</span></span>, <span class="pl-c1">array</span>(</span>
 <span class="pl-s1">    <span class="pl-s"><span class="pl-pds">'</span>db<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-c1">array</span>(</span>
 <span class="pl-s1">        <span class="pl-s"><span class="pl-pds">'</span>dsn<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">'</span>mysql:host=localhost;dbname=katora<span class="pl-pds">'</span></span>,</span>
