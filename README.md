@@ -25,10 +25,10 @@ require_once __DIR__ . '/vendor/autoload.php';
 $container = new Katora\Container();
 
 /**
- * Setting static values can be done in any way i.e., array or setter
+ * Setting static values can be done in any way i.e., \ArrayAccess or method call
  */
-// $container['config'] =  array(
-$container->add('config', array(
+// $container->add('config', array(
+$container['config'] =  array(
     'db' => array(
         'dsn' => 'mysql:host=localhost;dbname=katora',
         'username' => 'root',
@@ -38,7 +38,7 @@ $container->add('config', array(
         ),
         'charset' => 'utf8'
     )
-));
+);
 
 /**
  * Declared dependencies will be passed as arguments to callback.
