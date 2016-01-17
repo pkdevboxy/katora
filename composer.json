@@ -4,7 +4,7 @@
             "Katora\\": "src/"
         }
     },
-    "description": "Minimal implementation of container-interop/container-interop package, with addition of service extensions & declarative dependency resolution.",
+    "description": "Minimal implementation of container-interop/container-interop package, with addition of service extensions & easy dependency fetch.",
     "license": "MIT",
     "name": "vaibhavpandeyvpz/katora",
     "repositories": {
@@ -14,8 +14,8 @@
         }
     },
     "require": {
-        "container-interop/container-interop": "^1.1",
-        "php": ">=5.3.0"
+        "php": ">=5.4.0",
+        "container-interop/container-interop": "^1.1"
     },
     "require-dev": {
         "phpunit/phpunit": "4.*"

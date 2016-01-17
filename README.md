@@ -1,5 +1,5 @@
 # vaibhavpandeyvpz/katora
-Minimal implementation of [container-interop/container-interop](https://github.com/container-interop/container-interop) package, with addition of service extensions & declarative dependency resolution.
+Minimal implementation of [container-interop/container-interop](https://github.com/container-interop/container-interop) package, with addition of service extensions & easy dependency fetch.
 
 [![Build Status](https://img.shields.io/travis/vaibhavpandeyvpz/katora/master.svg?style=flat-square)](https://travis-ci.org/vaibhavpandeyvpz/katora)
 
@@ -18,58 +18,51 @@ vendor/bin/phpunit
 Usage
 ------
 ```php
-<?php
-
-require_once __DIR__ . '/vendor/autoload.php';
-
-$container = new Katora\Container();
-
 /**
- * Setting static values can be done in any way i.e., \ArrayAccess or method call
+ * Setting static values can be done by calling Katora\Container::set(...)
  */
-// $container->add('config', array(
-$container['config'] =  array(
-    'db' => array(
+$container->set('config', [
+    'db' => [
         'dsn' => 'mysql:host=localhost;dbname=katora',
         'username' => 'root',
         'password' => null,
-        'options' => array(
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
-        ),
+        'options' => [ PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION ],
         'charset' => 'utf8'
-    )
-);
+    ]
+]);
 
 /**
- * Declared dependencies will be passed as arguments to callback.
+ * Dependencies can be fetched using $this context.
  */
-// $container->factory('pdo', function (/** Dependencies */ array $config)
-$container->singleton('pdo', function (/** Dependencies */ array $config)
+$container->singleton('pdo', function ()
 {
+    /** @var Katora\Container $this */
+    $config = $this->get('config');
     return new PDO(
         $config['db']['dsn'],
         $config['db']['username'],
         $config['db']['password'],
         $config['db']['options']
     );
-}, /** Dependencies */ 'config');
+});
 
 /**
- * First argument passed to callback will be created
- * service i.e., PDO then come the dependencies (optional)
+ * Created service i.e., PDO will be passed as arguments
  */
-$container->extend('pdo', function (PDO $pdo, /** Dependencies */ array $config)
+$container->extend('pdo', function (PDO $pdo)
 {
+    /** @var Katora\Container $this */
+    $config = $this->get('config');
     $pdo->exec("SET NAMES {$config['db']['charset']}");
     // You must return the same or a new instance
     return $pdo;
-}, /** Dependencies */ 'config');
+});
 
 /**
  * Later in code, fetch the service by name
  */
  /** @var PDO $pdo */
-$pdo = $container['pdo'];
+$pdo = $container->get('pdo');
 ```
 
 License

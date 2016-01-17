@@ -4,9 +4,9 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
 {
     public function testBasic()
     {
-        $container = new Katora\Container(array('one' => 1));
-        $container->add('two', 2);
-        $container->factory('three', function ()
+        $container = new Katora\Container(['one' => 1]);
+        $container->set('two', 2);
+        $container->set('three', function ()
         {
             return 'something';
         });
@@ -15,19 +15,19 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($container->has('three'));
     }
 
-    public function testDepends()
+    public function testDependencies()
     {
         $container = new Katora\Container();
-        $container->factory('sum1', function ($one)
+        $container->set('sum1', function ()
         {
-            return 5 + 4 + $one;
-        }, 'one');
-        $container->factory('sum2', function ($one, $two)
+            return 5 + 4 + $this->get('one');
+        });
+        $container->set('sum2', function ()
         {
-            return 5 + 4 + $one + $two;
-        }, array('one', 'two'));
-        $container->add('one', 1);
-        $container->add('two', 2);
+            return 5 + 4 + $this->get('one') + $this->get('two');
+        });
+        $container->set('one', 1);
+        $container->set('two', 2);
         $this->assertEquals($container->get('sum1'), 10);
         $this->assertEquals($container->get('sum2'), 12);
     }
@@ -35,7 +35,7 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
     public function testExtensions()
     {
         $container = new Katora\Container();
-        $container->factory('sum', function ()
+        $container->set('sum', function ()
         {
             return 5 + 4;
         });
@@ -44,18 +44,6 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
             return $sum + 1;
         });
         $this->assertEquals($container->get('sum'), 10);
-    }
-
-    public function testFactories()
-    {
-        $container = new Katora\Container();
-        $container->factory('closure', function ()
-        {
-            return mt_rand(999, 9999);
-        });
-        $v1 = $container->get('closure');
-        $v2 = $container->get('closure');
-        $this->assertNotEquals($v1, $v2);
     }
 
     public function testSingleton()

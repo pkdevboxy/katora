@@ -10,8 +10,13 @@ use Katora\Exception\NotFoundException;
  * Class Container
  * @package Katora
  */
-class Container implements \ArrayAccess, ContainerInterface, \Countable
+class Container implements ContainerInterface
 {
+    /**
+     * @var array
+     */
+    private $singletons = [];
+
     /**
      * @var array
      */
@@ -21,61 +26,34 @@ class Container implements \ArrayAccess, ContainerInterface, \Countable
      * Registry constructor.
      * @param array $values
      */
-    function __construct(array $values = array())
+    function __construct(array $values = [])
     {
         $this->values = $values;
     }
 
     /**
      * @param string $id
-     * @param mixed|Service $value
-     * @throws ContainerException
-     */
-    public function add($id, $value)
-    {
-        if ($this->has($id)) {
-            throw new ContainerException("A service with id '{$id}' is already registered in container");
-        }
-        $this->values[$id] = $value;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function count()
-    {
-        return count($this->values);
-    }
-
-    /**
-     * @param string $id
-     * @param \Closure $closure
-     * @param array|string|null $depends
+     * @param \Closure $extension
      * @throws ContainerException
      * @throws NotFoundException
      */
-    public function extend($id, \Closure $closure, $depends = null)
+    public function extend($id, \Closure $extension)
     {
         if ($this->has($id)) {
-            if (($s = $this->values[$id]) instanceof Service) {
-                /** @var Service $s */
-                $s->add(new Extension($closure, $depends));
+            if (($closure = $this->values[$id]) instanceof \Closure) {
+                $this->set($id, function () use ($closure, $extension)
+                {
+                    /** @var Container $this */
+                    $extension = $extension->bindTo($this);
+                    $closure = $closure->bindTo($this);
+                    return $extension($closure());
+                }, true);
             } else {
-                throw new ContainerException(sprintf("Service id '%s' is not a %s\\Service instance", $id, __NAMESPACE__));
+                throw new ContainerException("Service id '{$id}' is not a \\Closure");
             }
         } else {
             throw new NotFoundException($id);
         }
-    }
-
-    /**
-     * @param string $id
-     * @param \Closure $closure
-     * @param array|string|null $depends
-     */
-    public function factory($id, \Closure $closure, $depends = null)
-    {
-        $this->add($id, new Service($closure, $depends));
     }
 
     /**
@@ -84,9 +62,12 @@ class Container implements \ArrayAccess, ContainerInterface, \Countable
     public function get($id)
     {
         if ($this->has($id)) {
-            $value = $this->values[$id];
-            if ($value instanceof Service) {
-                return $value->get($this);
+            if (($value = $this->values[$id]) instanceof \Closure) {
+                $value = $value->bindTo($this);
+                $value = $value();
+                if (isset($this->singletons[$id])) {
+                    $this->set($id, $value, true);
+                }
             }
             return $value;
         } else {
@@ -103,44 +84,25 @@ class Container implements \ArrayAccess, ContainerInterface, \Countable
     }
 
     /**
-     * @inheritdoc
+     * @param string $id
+     * @param mixed $value
+     * @throws ContainerException
      */
-    public function offsetExists($offset)
+    public function set($id, $value, $overwrite = false)
     {
-        return $this->has($offset);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function offsetGet($offset)
-    {
-        return $this->get($offset);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function offsetSet($offset, $value)
-    {
-        $this->add($offset, $value);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function offsetUnset($offset)
-    {
-        unset($this->values[$offset]);
+        if (($overwrite === false) && $this->has($id)) {
+            throw new ContainerException("A service with id '{$id}' is already registered in container");
+        }
+        $this->values[$id] = $value;
     }
 
     /**
      * @param string $id
      * @param \Closure $closure
-     * @param array|string|null $depends
      */
-    public function singleton($id, \Closure $closure, $depends = null)
+    public function singleton($id, \Closure $closure)
     {
-        $this->add($id, new Service($closure, $depends, true));
+        $this->set($id, $closure);
+        $this->singletons[$id] = true;
     }
 }
