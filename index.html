@@ -31,7 +31,7 @@
         <h1>
 <a id="vaibhavpandeyvpzkatora" class="anchor" href="#vaibhavpandeyvpzkatora" aria-hidden="true"><span class="octicon octicon-link"></span></a>vaibhavpandeyvpz/katora</h1>
 
-<p>Minimal implementation of <a href="https://github.com/container-interop/container-interop">container-interop/container-interop</a> package, with addition of service extensions &amp; declarative dependency resolution.</p>
+<p>Minimal implementation of <a href="https://github.com/container-interop/container-interop">container-interop/container-interop</a> package, with addition of service extensions &amp; easy dependency fetching.</p>
 
 <p><a href="https://travis-ci.org/vaibhavpandeyvpz/katora"><img src="https://img.shields.io/travis/vaibhavpandeyvpz/katora/master.svg?style=flat-square" alt="Build Status"></a></p>
 
@@ -41,65 +41,68 @@
 <div class="highlight highlight-source-shell"><pre>composer require vaibhavpandeyvpz/katora</pre></div>
 
 <h2>
-<a id="testing" class="anchor" href="#testing" aria-hidden="true"><span class="octicon octicon-link"></span></a>Testing</h2>
+<a id="new-instance" class="anchor" href="#new-instance" aria-hidden="true"><span class="octicon octicon-link"></span></a>New Instance</h2>
 
-<div class="highlight highlight-source-shell"><pre>vendor/bin/phpunit</pre></div>
+<div class="highlight highlight-text-html-php"><pre><span class="pl-s1"><span class="pl-smi">$container</span> <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-c1">Katora\</span><span class="pl-c1">Container</span>();</span></pre></div>
 
 <h2>
-<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Usage</h2>
+<a id="define-values" class="anchor" href="#define-values" aria-hidden="true"><span class="octicon octicon-link"></span></a>Define Values</h2>
 
-<div class="highlight highlight-text-html-php"><pre><span class="pl-pse">&lt;?php</span><span class="pl-s1"></span>
-<span class="pl-s1"></span>
-<span class="pl-s1"><span class="pl-k">require_once</span> <span class="pl-c1">__DIR__</span> <span class="pl-k">.</span> <span class="pl-s"><span class="pl-pds">'</span>/vendor/autoload.php<span class="pl-pds">'</span></span>;</span>
-<span class="pl-s1"></span>
-<span class="pl-s1"><span class="pl-smi">$container</span> <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-c1">Katora\</span><span class="pl-c1">Container</span>();</span>
-<span class="pl-s1"></span>
-<span class="pl-s1"><span class="pl-c">/**</span></span>
-<span class="pl-s1"><span class="pl-c"> * Setting static values can be done in any way i.e., \ArrayAccess or method call</span></span>
+<div class="highlight highlight-text-html-php"><pre><span class="pl-s1"><span class="pl-c">/**</span></span>
+<span class="pl-s1"><span class="pl-c"> * Setting static values can be done by calling Katora\Container::set(...)</span></span>
 <span class="pl-s1"><span class="pl-c"> */</span></span>
-<span class="pl-s1"><span class="pl-c">// $container-&gt;add('config', array(</span></span>
-<span class="pl-s1"><span class="pl-smi">$container</span>[<span class="pl-s"><span class="pl-pds">'</span>config<span class="pl-pds">'</span></span>] <span class="pl-k">=</span>  <span class="pl-c1">array</span>(</span>
-<span class="pl-s1">    <span class="pl-s"><span class="pl-pds">'</span>db<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-c1">array</span>(</span>
+<span class="pl-s1"><span class="pl-smi">$container</span><span class="pl-k">-&gt;</span>set(<span class="pl-s"><span class="pl-pds">'</span>config<span class="pl-pds">'</span></span>, [</span>
+<span class="pl-s1">    <span class="pl-s"><span class="pl-pds">'</span>db<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> [</span>
 <span class="pl-s1">        <span class="pl-s"><span class="pl-pds">'</span>dsn<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">'</span>mysql:host=localhost;dbname=katora<span class="pl-pds">'</span></span>,</span>
 <span class="pl-s1">        <span class="pl-s"><span class="pl-pds">'</span>username<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">'</span>root<span class="pl-pds">'</span></span>,</span>
 <span class="pl-s1">        <span class="pl-s"><span class="pl-pds">'</span>password<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-c1">null</span>,</span>
-<span class="pl-s1">        <span class="pl-s"><span class="pl-pds">'</span>options<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-c1">array</span>(</span>
-<span class="pl-s1">            <span class="pl-c1">PDO</span><span class="pl-k">::</span><span class="pl-c1">ATTR_ERRMODE</span> <span class="pl-k">=&gt;</span> <span class="pl-c1">PDO</span><span class="pl-k">::</span><span class="pl-c1">ERRMODE_EXCEPTION</span></span>
-<span class="pl-s1">        ),</span>
+<span class="pl-s1">        <span class="pl-s"><span class="pl-pds">'</span>options<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> [ <span class="pl-c1">PDO</span><span class="pl-k">::</span><span class="pl-c1">ATTR_ERRMODE</span> <span class="pl-k">=&gt;</span> <span class="pl-c1">PDO</span><span class="pl-k">::</span><span class="pl-c1">ERRMODE_EXCEPTION</span> ],</span>
 <span class="pl-s1">        <span class="pl-s"><span class="pl-pds">'</span>charset<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">'</span>utf8<span class="pl-pds">'</span></span></span>
-<span class="pl-s1">    )</span>
-<span class="pl-s1">);</span>
-<span class="pl-s1"></span>
-<span class="pl-s1"><span class="pl-c">/**</span></span>
-<span class="pl-s1"><span class="pl-c"> * Declared dependencies will be passed as arguments to callback.</span></span>
+<span class="pl-s1">    ]</span>
+<span class="pl-s1">]);</span></pre></div>
+
+<h2>
+<a id="singletons" class="anchor" href="#singletons" aria-hidden="true"><span class="octicon octicon-link"></span></a>Singletons</h2>
+
+<div class="highlight highlight-text-html-php"><pre><span class="pl-s1"><span class="pl-c">/**</span></span>
+<span class="pl-s1"><span class="pl-c"> * Dependencies can be fetched using $this context.</span></span>
 <span class="pl-s1"><span class="pl-c"> */</span></span>
-<span class="pl-s1"><span class="pl-c">// $container-&gt;factory('pdo', function (/** Dependencies */ array $config)</span></span>
-<span class="pl-s1"><span class="pl-smi">$container</span><span class="pl-k">-&gt;</span>singleton(<span class="pl-s"><span class="pl-pds">'</span>pdo<span class="pl-pds">'</span></span>, <span class="pl-k">function</span> (<span class="pl-c">/** Dependencies */</span> <span class="pl-k">array</span> <span class="pl-smi">$config</span>)</span>
+<span class="pl-s1"><span class="pl-smi">$container</span><span class="pl-k">-&gt;</span>singleton(<span class="pl-s"><span class="pl-pds">'</span>pdo<span class="pl-pds">'</span></span>, <span class="pl-k">function</span> ()</span>
 <span class="pl-s1">{</span>
+<span class="pl-s1">    <span class="pl-c">/** @var Katora\Container $this */</span></span>
+<span class="pl-s1">    <span class="pl-smi">$config</span> <span class="pl-k">=</span> <span class="pl-smi">$this</span><span class="pl-k">-&gt;</span>get(<span class="pl-s"><span class="pl-pds">'</span>config<span class="pl-pds">'</span></span>);</span>
 <span class="pl-s1">    <span class="pl-k">return</span> <span class="pl-k">new</span> <span class="pl-c1">PDO</span>(</span>
 <span class="pl-s1">        <span class="pl-smi">$config</span>[<span class="pl-s"><span class="pl-pds">'</span>db<span class="pl-pds">'</span></span>][<span class="pl-s"><span class="pl-pds">'</span>dsn<span class="pl-pds">'</span></span>],</span>
 <span class="pl-s1">        <span class="pl-smi">$config</span>[<span class="pl-s"><span class="pl-pds">'</span>db<span class="pl-pds">'</span></span>][<span class="pl-s"><span class="pl-pds">'</span>username<span class="pl-pds">'</span></span>],</span>
 <span class="pl-s1">        <span class="pl-smi">$config</span>[<span class="pl-s"><span class="pl-pds">'</span>db<span class="pl-pds">'</span></span>][<span class="pl-s"><span class="pl-pds">'</span>password<span class="pl-pds">'</span></span>],</span>
 <span class="pl-s1">        <span class="pl-smi">$config</span>[<span class="pl-s"><span class="pl-pds">'</span>db<span class="pl-pds">'</span></span>][<span class="pl-s"><span class="pl-pds">'</span>options<span class="pl-pds">'</span></span>]</span>
 <span class="pl-s1">    );</span>
-<span class="pl-s1">}, <span class="pl-c">/** Dependencies */</span> <span class="pl-s"><span class="pl-pds">'</span>config<span class="pl-pds">'</span></span>);</span>
-<span class="pl-s1"></span>
-<span class="pl-s1"><span class="pl-c">/**</span></span>
-<span class="pl-s1"><span class="pl-c"> * First argument passed to callback will be created</span></span>
-<span class="pl-s1"><span class="pl-c"> * service i.e., PDO then come the dependencies (optional)</span></span>
+<span class="pl-s1">});</span></pre></div>
+
+<h2>
+<a id="extending-services" class="anchor" href="#extending-services" aria-hidden="true"><span class="octicon octicon-link"></span></a>Extending Services</h2>
+
+<div class="highlight highlight-text-html-php"><pre><span class="pl-s1"><span class="pl-c">/**</span></span>
+<span class="pl-s1"><span class="pl-c"> * Created service i.e., PDO will be passed as arguments</span></span>
 <span class="pl-s1"><span class="pl-c"> */</span></span>
-<span class="pl-s1"><span class="pl-smi">$container</span><span class="pl-k">-&gt;</span>extend(<span class="pl-s"><span class="pl-pds">'</span>pdo<span class="pl-pds">'</span></span>, <span class="pl-k">function</span> (<span class="pl-c1">PDO</span> <span class="pl-smi">$pdo</span>, <span class="pl-c">/** Dependencies */</span> <span class="pl-k">array</span> <span class="pl-smi">$config</span>)</span>
+<span class="pl-s1"><span class="pl-smi">$container</span><span class="pl-k">-&gt;</span>extend(<span class="pl-s"><span class="pl-pds">'</span>pdo<span class="pl-pds">'</span></span>, <span class="pl-k">function</span> (<span class="pl-c1">PDO</span> <span class="pl-smi">$pdo</span>)</span>
 <span class="pl-s1">{</span>
+<span class="pl-s1">    <span class="pl-c">/** @var Katora\Container $this */</span></span>
+<span class="pl-s1">    <span class="pl-smi">$config</span> <span class="pl-k">=</span> <span class="pl-smi">$this</span><span class="pl-k">-&gt;</span>get(<span class="pl-s"><span class="pl-pds">'</span>config<span class="pl-pds">'</span></span>);</span>
 <span class="pl-s1">    <span class="pl-smi">$pdo</span><span class="pl-k">-&gt;</span>exec(<span class="pl-s"><span class="pl-pds">"</span>SET NAMES {<span class="pl-smi">$config</span>[<span class="pl-s"><span class="pl-pds">'</span>db<span class="pl-pds">'</span></span>][<span class="pl-s"><span class="pl-pds">'</span>charset<span class="pl-pds">'</span></span>]}<span class="pl-pds">"</span></span>);</span>
 <span class="pl-s1">    <span class="pl-c">// You must return the same or a new instance</span></span>
 <span class="pl-s1">    <span class="pl-k">return</span> <span class="pl-smi">$pdo</span>;</span>
-<span class="pl-s1">}, <span class="pl-c">/** Dependencies */</span> <span class="pl-s"><span class="pl-pds">'</span>config<span class="pl-pds">'</span></span>);</span>
-<span class="pl-s1"></span>
-<span class="pl-s1"><span class="pl-c">/**</span></span>
-<span class="pl-s1"><span class="pl-c"> * Later in code, fetch the service by name</span></span>
-<span class="pl-s1"><span class="pl-c"> */</span></span>
-<span class="pl-s1"> <span class="pl-c">/** @var PDO $pdo */</span></span>
-<span class="pl-s1"><span class="pl-smi">$pdo</span> <span class="pl-k">=</span> <span class="pl-smi">$container</span>[<span class="pl-s"><span class="pl-pds">'</span>pdo<span class="pl-pds">'</span></span>];</span></pre></div>
+<span class="pl-s1">});</span></pre></div>
+
+<h2>
+<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Usage</h2>
+
+<div class="highlight highlight-text-html-php"><pre><span class="pl-s1"><span class="pl-c">/**</span></span>
+<span class="pl-s1"><span class="pl-c"> * Later in code, fetch the service by id</span></span>
+<span class="pl-s1"><span class="pl-c"> *</span></span>
+<span class="pl-s1"><span class="pl-c"> * <span class="pl-k">@var</span> PDO $pdo */</span></span>
+<span class="pl-s1"> <span class="pl-k">*/</span></span>
+<span class="pl-s1"><span class="pl-smi">$pdo</span> <span class="pl-k">=</span> <span class="pl-smi">$container</span><span class="pl-k">-&gt;</span>get(<span class="pl-s"><span class="pl-pds">'</span>pdo<span class="pl-pds">'</span></span>);</span></pre></div>
 
 <h2>
 <a id="license" class="anchor" href="#license" aria-hidden="true"><span class="octicon octicon-link"></span></a>License</h2>
