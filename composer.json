@@ -4,7 +4,8 @@
             "Katora\\": "src/"
         }
     },
-    "description": "Minimal implementation of container-interop/container-interop package, with addition of service extensions & easy dependency fetch.",
+    "description": "Minimal implementation of container-interop/container-interop package with easy dependency fetching.",
+    "keywords": [ "container", "dependency", "injection", "service" ],
     "license": "MIT",
     "name": "vaibhavpandeyvpz/katora",
     "repositories": {

@@ -1,5 +1,5 @@
 # vaibhavpandeyvpz/katora
-Minimal implementation of [container-interop/container-interop](https://github.com/container-interop/container-interop) package, with addition of service extensions & easy dependency fetch.
+Minimal implementation of [container-interop/container-interop](https://github.com/container-interop/container-interop) package, with addition of service extensions & easy dependency fetching.
 
 [![Build Status](https://img.shields.io/travis/vaibhavpandeyvpz/katora/master.svg?style=flat-square)](https://travis-ci.org/vaibhavpandeyvpz/katora)
 
@@ -7,6 +7,12 @@ Install
 ------
 ```bash
 composer require vaibhavpandeyvpz/katora
+```
+
+New Instance
+------
+```php
+$container = new Katora\Container();
 ```
 
 Define Values
@@ -45,7 +51,7 @@ $container->singleton('pdo', function ()
 });
 ```
 
-Extend Services
+Extending Services
 ------
 ```php
 /**
