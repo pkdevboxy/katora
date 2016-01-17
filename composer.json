@@ -8,6 +8,9 @@
     "keywords": [ "container", "dependency", "injection", "service" ],
     "license": "MIT",
     "name": "vaibhavpandeyvpz/katora",
+    "provide": {
+        "container-interop/container-interop": "^1.1"
+    },
     "repositories": {
         "packagist": {
             "type": "composer",
