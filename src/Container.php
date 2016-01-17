@@ -15,6 +15,11 @@ class Container implements ContainerInterface
     /**
      * @var array
      */
+    private $cached = [];
+
+    /**
+     * @var array
+     */
     private $singletons = [];
 
     /**
@@ -61,18 +66,22 @@ class Container implements ContainerInterface
      */
     public function get($id)
     {
-        if ($this->has($id)) {
-            if (($value = $this->values[$id]) instanceof \Closure) {
-                $value = $value->bindTo($this);
-                $value = $value();
-                if (isset($this->singletons[$id])) {
-                    $this->set($id, $value, true);
-                }
-            }
-            return $value;
-        } else {
+        if (!$this->has($id)) {
             throw new NotFoundException($id);
         }
+        if (($value = $this->values[$id]) instanceof \Closure) {
+            $value = $value->bindTo($this);
+            if (isset($this->singletons[$id])) {
+                if (isset($this->cached[$id])) {
+                    $value = $this->cached[$id];
+                } else {
+                    $value = $this->cached[$id] = $value();
+                }
+            } else {
+                $value = $value();
+            }
+        }
+        return $value;
     }
 
     /**
@@ -86,11 +95,13 @@ class Container implements ContainerInterface
     /**
      * @param string $id
      * @param mixed $value
+     * @param bool $overwrite
+     *
      * @throws ContainerException
      */
     public function set($id, $value, $overwrite = false)
     {
-        if (($overwrite === false) && $this->has($id)) {
+        if (!$overwrite && $this->has($id)) {
             throw new ContainerException("A service with id '{$id}' is already registered in container");
         }
         $this->values[$id] = $value;
