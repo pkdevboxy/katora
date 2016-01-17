@@ -9,13 +9,7 @@ Install
 composer require vaibhavpandeyvpz/katora
 ```
 
-Testing
-------
-``` bash
-vendor/bin/phpunit
-```
-
-Usage
+Define Values
 ------
 ```php
 /**
@@ -30,7 +24,11 @@ $container->set('config', [
         'charset' => 'utf8'
     ]
 ]);
+```
 
+Singletons
+------
+```php
 /**
  * Dependencies can be fetched using $this context.
  */
@@ -45,7 +43,11 @@ $container->singleton('pdo', function ()
         $config['db']['options']
     );
 });
+```
 
+Extend Services
+------
+```php
 /**
  * Created service i.e., PDO will be passed as arguments
  */
@@ -57,11 +59,16 @@ $container->extend('pdo', function (PDO $pdo)
     // You must return the same or a new instance
     return $pdo;
 });
+```
 
+Usage
+------
+```php
 /**
- * Later in code, fetch the service by name
+ * Later in code, fetch the service by id
+ *
+ * @var PDO $pdo */
  */
- /** @var PDO $pdo */
 $pdo = $container->get('pdo');
 ```
 
